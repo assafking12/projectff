@@ -18,7 +18,8 @@ myapp.controller('loginCtrl', function ($scope, $http) {
 
     window.fbAsyncInit = function () {
         FB.init({
-            appId: '292046017808004',
+            appId: '292046017808004',    // Prod
+            // appId: '236265666776812',       //Test
             status: true,
             cookie: true,
             xfbml: true,
@@ -46,8 +47,6 @@ myapp.controller('loginCtrl', function ($scope, $http) {
         FB.api('/me?fields=name,picture', function (response) {
             $scope.user.name = response.name;
             $scope.user.photo = response.picture.data.url;
-            // $scope.connected = true;
-            // $scope.$apply();
             $http({
                 method:"POST",
                 data: $scope.user,

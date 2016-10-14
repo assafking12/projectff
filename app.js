@@ -5,8 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://AssafZvigi:Aa123456@ds011462.mlab.com:11462/projectff";
-// var url = "mongodb://localhost:27017/projectff";
+var url = "mongodb://AssafZvigi:Aa123456@ds011462.mlab.com:11462/projectff"; // Prod
+// var url = "mongodb://localhost:27017/projectff"; // Test
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -25,14 +25,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next){
-  if (req.db == null){
-    MongoClient.connect(url, function(err, db){
-      if (err==null){
-        req.db = db;
-        next();
-      }
-    })
-  }
+  MongoClient.connect(url, function(err, db){
+    if (err==null){
+      req.db = db;
+      req.closeDB = function(){
+        req.db.close();
+      };
+
+      next();
+    }
+  });
 });
 
 app.use('/', routes);
