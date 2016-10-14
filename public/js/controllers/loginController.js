@@ -17,8 +17,8 @@ myapp.controller('loginCtrl', function ($scope, $http) {
     }
 
     FB.init({
-        // appId: '292046017808004',    // Prod
-        appId: '236265666776812',       //Test
+        appId: '292046017808004',    // Prod
+        // appId: '236265666776812',       //Test
         status: true,
         cookie: true,
         xfbml: true,
