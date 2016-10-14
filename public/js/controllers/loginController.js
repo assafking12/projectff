@@ -16,26 +16,27 @@ myapp.controller('loginCtrl', function ($scope, $http) {
         }
     }
 
-    $(window)[0].fbAsyncInit = function () {
-        FB.init({
-            appId: '292046017808004',    // Prod
-            // appId: '236265666776812',       //Test
-            status: true,
-            cookie: true,
-            xfbml: true,
-            version: 'v2.4'
-        });
+    FB.init({
+        appId: '292046017808004',    // Prod
+        // appId: '236265666776812',       //Test
+        status: true,
+        cookie: true,
+        xfbml: true,
+        version: 'v2.4'
+    });
 
-        FB.getLoginStatus(function (response) {
-            if (response.status === 'connected') {
-                var date = new Date();
-                var millis = date.getTime() + response.authResponse.expiresIn * 1000;
-                date = new Date(millis - date.getTimezoneOffset() * 60000);
-                var expirationDate = date.toISOString();
-                saveUser(expirationDate, response);
-            }
-        });
-    };
+    FB.getLoginStatus(function (response) {
+        if (response.status === 'connected') {
+            var date = new Date();
+            var millis = date.getTime() + response.authResponse.expiresIn * 1000;
+            date = new Date(millis - date.getTimezoneOffset() * 60000);
+            var expirationDate = date.toISOString();
+            saveUser(expirationDate, response);
+        }
+    });
+    // $(window)[0].fbAsyncInit = function () {
+    //
+    // };
 
     function saveUser(expirationDate, response) {        
         $scope.user.id = response.authResponse.userID;
