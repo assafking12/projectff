@@ -1,4 +1,4 @@
-myapp.controller('loginCtrl', function ($scope, $http, facebookService, restService) {
+myapp.controller('loginCtrl', function ($scope, $http, facebookService, restService, $location) {
 
     $scope.user = {};
     $scope.connected = false;
@@ -42,6 +42,7 @@ myapp.controller('loginCtrl', function ($scope, $http, facebookService, restServ
             restService.users.loginUser($scope.user, function(data){
                 $scope.user = data;
                 $scope.connected = true;
+                $location.path("/search");
             }, function(error) {
                 console.log(error);
                 alert("התרחשה שגיאה");
