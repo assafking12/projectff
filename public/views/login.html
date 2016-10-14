@@ -1,5 +1,6 @@
-<fb:login-button ng-if="!connected" scope:"public_profile,email" onlogin="checkLoginState();">
-</fb:login-button>
+<div ng-if="!connected" class="fb-login-button" ng-click="FBLogin()" style="cursor: pointer;">
+    <img src="/images/login.png" style="width: 150px;">
+</div>
 <div ng-if="connected">
     <h1>Hello {{user.name}}!!!</h1>
     <img ng-src="{{user.photo}}">
