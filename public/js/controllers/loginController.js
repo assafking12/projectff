@@ -16,7 +16,7 @@ myapp.controller('loginCtrl', function ($scope, $http) {
         }
     }
 
-    $(window).fbAsyncInit = function () {
+    $(window)[0].fbAsyncInit = function () {
         FB.init({
             appId: '292046017808004',    // Prod
             // appId: '236265666776812',       //Test
