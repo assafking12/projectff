@@ -5,7 +5,7 @@ myapp.service('facebookService', function(){
     var exportService = {};
 
     exportService.login = function(p_callbackFunc) {
-        FB.login(p_callbackFunc, {scope:"public_profile,user_friends,email", return_scopes: true});
+        FB.login(p_callbackFunc, {scope:"public_profile,user_friends,email,user_location", return_scopes: true});
     };
 
     exportService.getLoginStatus = function(p_callbackFunc) {
