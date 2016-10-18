@@ -37,7 +37,7 @@ router.post('/findFaceInImage', function(req, res){
                 'Ocp-Apim-Subscription-Key': '1b4677c2416f40a1b28ff550075e36d4'
             },
             url: "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
-            data: {"url":"https://findemapp.herokuapp.com/photos/cacheImages/"+imageId}
+            json: {"url":"https://findemapp.herokuapp.com/photos/cacheImages/"+imageId}
         }, function (error, response, body){
             if (error){                
                 console.log(error);
