@@ -26,8 +26,8 @@ router.post('/findFaceInImage', function(req, res){
             }
         });
     } else {
-        var imageId = guid.create();
-        fs.writeFile(path.join(__dirname,"../tempImages/"+imageId+".jpg"), req.body.request.url.split(',')[1], 'base64', function(err){
+        var imageId = guid.create()+".jpg";
+        fs.writeFile(path.join(__dirname,"../tempImages/"+imageId), req.body.request.url.split(',')[1], 'base64', function(err){
             if (err){
                 console.log(err);
             } else {
