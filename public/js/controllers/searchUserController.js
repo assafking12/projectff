@@ -35,7 +35,7 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
             var blob = new Blob([ia], {type:mimeString});
             restService.photos.findFaceInImage(false, reader.result, function(data){
                 if (!data.error){
-                    var ctx = $("#canvas").getContext("2d");
+                    var ctx = $("#canvas")[0].getContext("2d");
                     data.forEach(function(currFace){
                         ctx.beginPath();
                         ctx.rect(currFace.faceRectangle.left, currFace.faceRectangle.top, currFace.faceRectangle.width, currFace.faceRectangle.height);
