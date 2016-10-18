@@ -43,7 +43,7 @@ router.post('/findFaceInImage', function(req, res){
                 console.log(error);
             }
 
-            res.json({data:body,guid:imageId});
+            res.json(body);
         });
             }
         });
