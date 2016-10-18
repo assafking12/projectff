@@ -7,8 +7,10 @@ var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://AssafZvigi:Aa123456@ds011462.mlab.com:11462/projectff"; // Prod
 // var url = "mongodb://localhost:27017/projectff"; // Test
+// var url = "mongodb://localhost:27017/test"; // Test
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var photos = require('./routes/photos');
 
 var app = express();
 
@@ -19,6 +21,7 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(bodyParser({limit: '50mb'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -39,6 +42,7 @@ app.use(function(req, res, next){
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/photos', photos);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

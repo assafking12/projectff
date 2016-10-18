@@ -41,7 +41,7 @@ myapp.service('restService', function($http) {
     var exportService = {};
 
     // Defining the models
-    var models = ['users'];
+    var models = ['users', 'photos'];
 
     models.forEach(function(currModel) {
         var url = "/" + currModel + "/";
@@ -68,6 +68,22 @@ myapp.service('restService', function($http) {
     angular.extend(exportService.users, {
         loginUser: function(p_user, p_successFunc, p_errorFunc) {
             sendHttpRequestNotGetWithParams(exportService.users.modelUrl + "loginUser", "POST", p_user, p_successFunc, p_errorFunc);
+        }
+    });
+
+    /**
+     * Extend Photos methods
+     */
+    angular.extend(exportService.photos, {
+        findFaceInImage: function(p_isUrl, p_urlOrBase64, p_successFunc, p_errorFunc){
+            var request = {
+                isUrl: p_isUrl,
+                url: p_urlOrBase64
+            }
+
+            var data = {request:request};
+
+            sendHttpRequestNotGetWithParams(exportService.photos.modelUrl + "findFaceInImage","POST",data,p_successFunc,p_errorFunc);
         }
     });
 
