@@ -1,4 +1,4 @@
-myapp.controller('loginCtrl', function ($scope, $http, facebookService, restService, $location) {
+myapp.controller('loginCtrl', function ($scope, facebookService, restService, $location) {
 
     $scope.user = {};
     $scope.connected = false;

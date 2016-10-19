@@ -16,7 +16,6 @@ router.post('/loginUser', function(req, res){
     // There was an error
     if (err!=null){
       console.log("Failed to find user with the id: " + userId + "\n" + err);
-      req.closeDB();
       res.json({
         status:400,
         error: err
@@ -38,7 +37,6 @@ router.post('/loginUser', function(req, res){
 
       // Save the new user
       collection.insert(user, function(insertError, r){
-        req.closeDB();
         if (insertError==null){
           res.json(user);
         } else {
@@ -59,22 +57,13 @@ router.post('/loginUser', function(req, res){
 
       // Set the new fields of the user
       collection.update({userId:userId},{$set:{token:token,name:name,lastVisit:isodate}},function(data){
-        req.closeDB();
         var user = users[0];
         user.token = token;
         user.name = name;
         user.lastVisit = isodate;
         res.json(user);
       });
-    // , function(error) {
-    //     console.log("\nFailed to update user: " + userId + "\n" + error + "\n");
-    //     res.json({
-    //       status: 400,
-    //       error:error
-    //     });
-    //   }
     } else {
-      req.closeDB();
       console.log("\n******ERROR******\nThere is multiple users with the given userId: " + userId + "\n");
       res.json({
         status:400,

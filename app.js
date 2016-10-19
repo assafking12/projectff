@@ -4,10 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var onFinished = require('on-finished');
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://AssafZvigi:Aa123456@ds011462.mlab.com:11462/projectff"; // Prod
+// var url = "mongodb://AssafZvigi:Aa123456@ds011462.mlab.com:11462/projectff"; // Prod
 // var url = "mongodb://localhost:27017/projectff"; // Test
-// var url = "mongodb://localhost:27017/test"; // Test
+var url = "mongodb://localhost:27017/test"; // Test
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var photos = require('./routes/photos');
@@ -31,9 +32,12 @@ app.use(function(req, res, next){
   MongoClient.connect(url, function(err, db){
     if (err==null){
       req.db = db;
-      req.closeDB = function(){
-        req.db.close();
-      };
+      onFinished(req, function(err, endRequest){
+        endRequest.db.close();
+      });
+      // req.closeDB = function(){
+      //   req.db.close();
+      // };
 
       next();
     }

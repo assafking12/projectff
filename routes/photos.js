@@ -9,60 +9,71 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var guid = require('guid');
 
+/////////////////////
+// Copy code from git
+/////////////////////
+
+function sendFaceAPI(p_url, p_data, p_callback) {
+    request.post({
+        headers: {
+            'content-type': 'application/json',
+            'Ocp-Apim-Subscription-Key': '1b4677c2416f40a1b28ff550075e36d4'
+        },
+        url: p_url,
+        json: p_data
+    }, p_callback);
+}
+
 router.post('/findFaceInImage', function(req, res){
+    var url = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false";
+
     if (req.body.request.isUrl){
-        request.post({
-            headers: {
-                'content-type': 'application/json',
-                'Ocp-Apim-Subscription-Key': '1b4677c2416f40a1b28ff550075e36d4'
-            },
-            url: "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
-            json: req.body.request
-        }, function (error, response, body){
-            if (!error){
+        sendFaceAPI(url, req.body.request, function (error, response, body) {
+            if (!error) {
                 res.json(body);
             } else {
                 console.log(error);
             }
         });
     } else {
-        var imageId = guid.create();
-        fs.writeFile(path.join(__dirname,"../tempImages/"+imageId+".jpg"), req.body.request.url.split(',')[1], 'base64', function(err){
+        var imageId = guid.create() + ".jpg";
+        var filePath = path.join(__dirname, "../tempImages/" + imageId);
+        fs.writeFile(filePath, req.body.request.url.split(',')[1], 'base64', function(err){
             if (err){
                 console.log(err);
             } else {
-                request.post({
-            headers: {
-                'content-type': 'application/json',
-                'Ocp-Apim-Subscription-Key': '1b4677c2416f40a1b28ff550075e36d4'
-            },
-            url: "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
-            data: "https://findemapp.herokuapp.com/photos/cacheImages/"+imageId
-        }, function (error, response, body){
-            if (error){                
-                console.log(error);
-            }
+                sendFaceAPI(url, {
+                    url: "https://findemapp.herokuapp.com/photos/cacheImages/" + imageId
+                }, function (error, response, body) {
+                    if (error) {
+                        console.log(error);
+                        res.json(body);
+                    } else {
+                        // Remove the file
+                        fs.unlink(filePath, function(err){
+                            if (err) {
+                                console.log(err);
+                            }
 
-            res.json({data:body,guid:imageId});
-        });
+                            res.json(body);
+                        })
+                    }
+                });
             }
         });
     }
 });
 
+router.get('/cacheImages', function(req,res) {
+    var directoryPath = path.join(__dirname,"../tempImages/");
+    fs.readdir(directoryPath, function (err, files) {
+        res.json(files);
+    });
+});
+
 router.get('/cacheImages/:imageGuid', function(req, res) {
-    // TODO: delete the file after visit
     var filePath = path.join(__dirname,"../tempImages/", req.params.imageGuid);
     res.sendFile(filePath);
-    // fs.readFile(filePath, function(err, data){
-    //     fs.unlink(filePath, function(err){
-    //     if (err){
-    //         console.log(err);
-    //     } else {
-    //         res.sendFile(fs.);
-    //     }
-    // });
-    // });
 });
 
 module.exports = router;
