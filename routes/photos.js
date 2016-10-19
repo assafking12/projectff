@@ -9,10 +9,6 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var guid = require('guid');
 
-/////////////////////
-// Copy code from git
-/////////////////////
-
 function sendFaceAPI(p_url, p_data, p_callback) {
     request.post({
         headers: {
