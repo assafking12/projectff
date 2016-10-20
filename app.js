@@ -35,9 +35,6 @@ app.use(function(req, res, next){
       onFinished(req, function(err, endRequest){
         endRequest.db.close();
       });
-      // req.closeDB = function(){
-      //   req.db.close();
-      // };
 
       next();
     }

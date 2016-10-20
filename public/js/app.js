@@ -1,4 +1,4 @@
-var myapp = angular.module('myapp', ['ngRoute']);
+var myapp = angular.module('myapp', ['ngRoute', 'ngMaterial']);
 
 FB.init({
     appId: '292046017808004',    // Prod

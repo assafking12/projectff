@@ -1,3 +1,16 @@
-<input type="file" accept="image/*" id="imageUpload" onchange="angular.element(this).scope().showPreview()">
-<button ng-click="uploadImage()">upload</button>
-<canvas id="canvas"></canvas>
+<div style="display: inline-block;">
+    <canvas id="canvas" width="450" height="450" style="border-style: dashed;"></canvas>
+    <br>
+    <div style="width: 450px;" layout="row" layout-align="center center">
+        <md-input-container md-no-float class="md-block" style="padding-bottom: 0px;">
+            <input type="text" id="urlImage" ng-model="image.url" style="width: 333px;" placeholder="Enter image url and than hit the refresh button">
+        </md-input-container>
+        <md-button class="md-fab md-mini" id="mdButtonRefresh" ng-click="refreshUrl()" aria-label="Refresh image url">
+            <md-icon md-svg-src="images/svg/autorenew.svg"></md-icon>
+        </md-button>
+        <input type="file" accept="image/*" id="imageUpload" style="display: none;" onchange="angular.element(this).scope().showPreview()">
+        <md-button class="md-fab md-mini" id="mdButtonImage" ng-click="toggleFile()" aria-label="Add Photo">
+            <md-icon md-svg-src="images/svg/add_a_photo.svg"></md-icon>
+        </md-button>
+    </div>
+</div>
