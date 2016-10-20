@@ -39,8 +39,8 @@ router.post('/findFaceInImage', function(req, res){
                 console.log(err);
             } else {
                 sendFaceAPI(url, {
-                    url: "https://findemapp.herokuapp.com/photos/cacheImages/14462714_1323377101006940_1255535041551386461_n.jpg"
-                    // url: "https://findemapp.herokuapp.com/photos/cacheImages/" + imageId
+                    // url: "https://findemapp.herokuapp.com/photos/cacheImages/14462714_1323377101006940_1255535041551386461_n.jpg"
+                    url: "https://findemapp.herokuapp.com/photos/cacheImages/" + imageId
                 }, function (error, response, body) {
                     if (error) {
                         console.log(error);
