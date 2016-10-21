@@ -32,8 +32,10 @@ app.use(function(req, res, next){
   MongoClient.connect(url, function(err, db){
     if (err==null){
       req.db = db;
-      onFinished(req, function(err, endRequest){
-        endRequest.db.close();
+      onFinished(res, function(err) {
+        if (err != null && req.db != null) {
+          req.db.close();
+        }
       });
 
       next();

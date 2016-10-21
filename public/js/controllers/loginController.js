@@ -40,9 +40,14 @@ myapp.controller('loginCtrl', function ($scope, facebookService, restService, $l
             $scope.user.photo = response.picture.data.url;
 
             restService.users.loginUser($scope.user, function(data){
-                $scope.user = data;
-                $scope.connected = true;
-                $location.path("/search");
+                if (!data.error) {
+                    $scope.user = data;
+                    $scope.connected = true;
+                    $location.path("/search");
+                } else {
+                    console.log(data.error);
+                    alert("התרחשה שגיאה");
+                }
             }, function(error) {
                 console.log(error);
                 alert("התרחשה שגיאה");
