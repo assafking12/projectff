@@ -1,4 +1,4 @@
-myapp.controller('loginCtrl', function ($scope, facebookService, restService, $location) {
+myapp.controller('loginCtrl', function ($scope, facebookService, restService, $location, $rootScope) {
 
     $scope.user = {};
     $scope.connected = false;
@@ -9,49 +9,25 @@ myapp.controller('loginCtrl', function ($scope, facebookService, restService, $l
 
     facebookService.getLoginStatus(function(response){
         if (response.status === 'connected') {
-            var date = new Date();
-            var millis = date.getTime() + response.authResponse.expiresIn * 1000;
-            date = new Date(millis - date.getTimezoneOffset() * 60000);
-            var expirationDate = date.toISOString();
-            saveUser(expirationDate, response);
+            facebookService.saveUser(facebookService.calcExpirationDate(response.authResponse.expiresIn), response, function(user){
+                $rootScope.user = user;
+                $location.path('/search');
+            }, function(){
+                alert("התרחשה שגיאה");
+            });
         }
     });
 
     $scope.FBLogin = function() {
         facebookService.login(function (response) {
             if (response.authResponse) {
-                var date = new Date();
-                var millis = date.getTime() + response.authResponse.expiresIn * 1000;
-                date = new Date(millis - date.getTimezoneOffset() * 60000);
-                saveUser(date.toISOString(), response);
-            }
-        });
-    }
-
-    function saveUser(expirationDate, response) {
-        $scope.user.id = response.authResponse.userID;
-        $scope.user.token = {
-            accessToken: response.authResponse.accessToken,
-            expiresIn: expirationDate
-        };
-
-        facebookService.api('/me?fields=name,picture', function (response){
-            $scope.user.name = response.name;
-            $scope.user.photo = response.picture.data.url;
-
-            restService.users.loginUser($scope.user, function(data){
-                if (!data.error) {
-                    $scope.user = data;
-                    $scope.connected = true;
-                    $location.path("/search");
-                } else {
-                    console.log(data.error);
+                facebookService.saveUser(facebookService.calcExpirationDate(response.authResponse.expiresIn), response, function(user){
+                    $rootScope.user = user;
+                    $location.path('/search');
+                }, function(){
                     alert("התרחשה שגיאה");
-                }
-            }, function(error) {
-                console.log(error);
-                alert("התרחשה שגיאה");
-            })
+                });
+            }
         });
     }
 
