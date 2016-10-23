@@ -40,6 +40,7 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
                 if ($rootScope.user != null && response.status === 'connected' && response.authResponse != null && $rootScope.user.userId == response.authResponse.userID){
                     restService.photos.findFaceInImage(p_isUrl, p_src, function(data){
                         if (!data.error){
+                            $scope.selectedFace = null;
                             $scope.faces = [];
                             var ctx = $("#canvas")[0].getContext("2d");
                             data.forEach(function(currFace){
