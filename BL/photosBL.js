@@ -82,3 +82,10 @@ exports.getImage = function(p_imageGuid, p_callback) {
     var filePath = path.join(__dirname, "../tempImages/", p_imageGuid);
     p_callback(filePath);
 }
+
+exports.findUserByPhoto = function(p_faceId, p_callback) {
+    var db = mongo.db;
+    db.collection("Users").find({name: "Assaf Zvigoren"}).toArray(function(err, data){
+        p_callback(data);
+    })
+}

@@ -12,8 +12,8 @@ router.post('/findFaceInImage', function(req, res){
     })
 });
 
-router.get('/cacheImages', function(req,res) {
-    photosBL.cacheImages(function(p_files) {
+router.get('/cacheImages', function(req, res) {
+    photosBL.cacheImages(function (p_files) {
         res.json(p_files);
     });
 });
@@ -21,6 +21,12 @@ router.get('/cacheImages', function(req,res) {
 router.get('/cacheImages/:imageGuid', function(req, res) {
     photosBL.getImage(req.params.imageGuid, function(p_filePath) {
         res.sendFile(p_filePath);
+    });
+});
+
+router.post('/findUserByPhoto', function(req, res) {
+    photosBL.findUserByPhoto(req.body.faceId, function(data) {
+        res.json(data);
     });
 });
 

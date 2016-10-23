@@ -79,11 +79,18 @@ myapp.service('restService', function($http) {
             var request = {
                 isUrl: p_isUrl,
                 url: p_urlOrBase64
-            }
+            };
 
             var data = {request:request};
 
             sendHttpRequestNotGetWithParams(exportService.photos.modelUrl + "findFaceInImage","POST",data,p_successFunc,p_errorFunc);
+        },
+        findUserByPhoto: function(p_faceId, p_successFunc, p_errorFunc){
+            var request = {
+                p_faceId: p_faceId
+            };
+
+            sendHttpRequestNotGetWithParams(exportService.photos.modelUrl + "findUserByPhoto", "POST", request, p_successFunc, p_errorFunc);
         }
     });
 
