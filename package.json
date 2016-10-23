@@ -17,7 +17,6 @@
     "jarfile": "^1.0.4",
     "mongodb": "^2.2.10",
     "morgan": "~1.7.0",
-    "on-finished": "^2.3.0",
     "request": "^2.75.0",
     "serve-favicon": "~2.3.0"
   }

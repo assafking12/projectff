@@ -4,11 +4,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var onFinished = require('on-finished');
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://AssafZvigi:Aa123456@ds011462.mlab.com:11462/projectff"; // Prod
-// var url = "mongodb://localhost:27017/projectff"; // Test
-// var url = "mongodb://localhost:27017/test"; // Test
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var photos = require('./routes/photos');
@@ -27,21 +22,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(function(req, res, next){
-  MongoClient.connect(url, function(err, db){
-    if (err==null){
-      req.db = db;
-      onFinished(res, function(err) {
-        if (err != null && req.db != null) {
-          req.db.close();
-        }
-      });
-
-      next();
-    }
-  });
-});
 
 app.use('/', routes);
 app.use('/users', users);
