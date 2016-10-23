@@ -13,15 +13,15 @@ router.post('/findFaceInImage', function(req, res){
 });
 
 router.get('/cacheImages', function(req,res) {
-    var directoryPath = path.join(__dirname,"../tempImages/");
-    fs.readdir(directoryPath, function (err, files) {
-        res.json(files);
+    photosBL.cacheImages(function(p_files) {
+        res.json(p_files);
     });
 });
 
 router.get('/cacheImages/:imageGuid', function(req, res) {
-    var filePath = path.join(__dirname,"../tempImages/", req.params.imageGuid);
-    res.sendFile(filePath);
+    photosBL.getImage(req.params.imageGuid, function(p_filePath) {
+        res.sendFile(p_filePath);
+    });
 });
 
 module.exports = router;

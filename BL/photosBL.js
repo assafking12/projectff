@@ -70,3 +70,15 @@ exports.findFaceInImage = function (p_request, p_callback) {
         });
     }
 }
+
+exports.cacheImages = function(p_callback) {
+    var directoryPath = path.join(__dirname, "../tempImages/");
+    fs.readdir(directoryPath, function (err, files) {
+        p_callback(files);
+    });
+}
+
+exports.getImage = function(p_imageGuid, p_callback) {
+    var filePath = path.join(__dirname, "../tempImages/", p_imageGuid);
+    p_callback(filePath);
+}
