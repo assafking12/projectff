@@ -8,12 +8,13 @@ var bodyParser = require('body-parser');
 var guid = require('guid');
 var mongo = require('../DAL/mongoConnection');
 
-function sendFaceAPI(p_url, p_data, p_callback) {
-    request.post({
+function sendFaceAPI(p_url, p_data, p_method, p_callback) {
+    request({
         headers: {
             'content-type': 'application/json',
             'Ocp-Apim-Subscription-Key': '1b4677c2416f40a1b28ff550075e36d4'
         },
+        method: p_method,
         url: p_url,
         json: p_data
     }, p_callback);
@@ -23,7 +24,7 @@ exports.findFaceInImage = function (p_request, p_callback) {
     var url = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false";
 
     if (p_request.body.request.isUrl){
-        sendFaceAPI(url, p_request.body.request, function (error, response, body) {
+        sendFaceAPI(url, p_request.body.request, "POST", function (error, response, body) {
             if (!error) {
                 p_callback(body);
             } else {
@@ -46,9 +47,8 @@ exports.findFaceInImage = function (p_request, p_callback) {
                 });
             } else {
                 sendFaceAPI(url, {
-                    // url: "https://findemapp.herokuapp.com/photos/cacheImages/14462714_1323377101006940_1255535041551386461_n.jpg"
                     url: "https://findemapp.herokuapp.com/photos/cacheImages/" + imageId
-                }, function (error, response, body) {
+                }, "POST", function (error, response, body) {
                     if (error) {
                         console.log(error);
                         p_callback({
@@ -69,19 +69,19 @@ exports.findFaceInImage = function (p_request, p_callback) {
             }
         });
     }
-}
+};
 
 exports.cacheImages = function(p_callback) {
     var directoryPath = path.join(__dirname, "../tempImages/");
     fs.readdir(directoryPath, function (err, files) {
         p_callback(files);
     });
-}
+};
 
 exports.getImage = function(p_imageGuid, p_callback) {
     var filePath = path.join(__dirname, "../tempImages/", p_imageGuid);
     p_callback(filePath);
-}
+};
 
 exports.findUserByPhoto = function(p_faceId, p_callback) {
     var db = mongo.db;
@@ -100,7 +100,7 @@ exports.findUserByPhoto = function(p_faceId, p_callback) {
 
         data.forEach(function(currList) {
             json.faceListId = currList.faceListId;
-            sendFaceAPI(url, json, function(apiErr, response, faces) {
+            sendFaceAPI(url, json, "POST", function(apiErr, response, faces) {
                 if (apiErr == null && faces != null) {
                     faces.forEach(function(currFace) {
                         if (currFace.confidence >= 0.5) {
@@ -125,3 +125,107 @@ exports.findUserByPhoto = function(p_faceId, p_callback) {
         });
     });
 }
+
+exports.addImageToFaceList = function(p_imageUrl, p_userId, p_callback) {
+    var db = mongo.db;
+    var photosCollection = db.collection('FaceLists');
+
+    photosCollection.findOne({"numberOfUsers":{"$lt":50}}).then(function(lst) {
+
+        var addFaceFunction = function(listId) {
+            var url = "https://api.projectoxford.ai/face/v1.0/facelists/" + listId + "/persistedFaces";
+            var json = {
+                url: p_imageUrl
+            };
+
+            sendFaceAPI(url, json, "POST", function(error,response, data) {
+                if (error) {
+                    console.log('Failed to add the image to the facelist\n' + error);
+                    p_callback({
+                        status: 400,
+                        error: error
+                    });
+                } else {
+                    if (data.error){
+                        console.log('Failed to add the image to the facelist\n' + data.error);
+                        p_callback({
+                            status: 400,
+                            error: error
+                        });
+                    } else {
+                        photosCollection.updateOne({
+                            faceListId: listId
+                        }, {
+                            $push: {
+                                users: {
+                                    userId: p_userId,
+                                    persistedFaceId: data.persistedFaceId
+                                }
+                            },
+                            $inc: {
+                                numberOfUsers: 1
+                            }
+                        }, function(updateErr, r) {
+                            if (updateErr) {
+                                console.log("Failed to add the persisted face to the facelist in the db\n" + updateErr);
+                                p_callback({
+                                    status: 400,
+                                    error: error
+                                });
+                            } else {
+                                p_callback({
+                                    faceListId: listId,
+                                    persistedFaceId: data.persistedFaceId
+                                });
+                            }
+                        })
+                    }
+                }
+            });
+        };
+
+        // Check if there is no available face list
+        if (lst == null) {
+            // Create new face list in the DB and the face api
+            var faceListIdGuid = guid.create();
+            var url = "https://api.projectoxford.ai/face/v1.0/facelists/" + faceListIdGuid;
+            var json = {
+                name: faceListIdGuid
+            };
+            sendFaceAPI(url, json, "PUT", function(addFaceListError, response, faceList) {
+                if (addFaceListError) {
+                    console.log("Failed to create face list using the face api\n" + addFaceListError);
+                    p_callback({
+                        status: 400,
+                        error: error
+                    });
+                } else {
+                    var faceListToInsert = {
+                        faceListId: faceListIdGuid,
+                        users: [],
+                        numberOfUsers: 0
+                    };
+                    photosCollection.insert(faceListToInsert, function(insertErr, r) {
+                        if (insertErr) {
+                            console.log("Failed to insert new face list to the DB\n" + insertErr);
+                            p_callback({
+                                status: 400,
+                                error: error
+                            });
+                        } else {
+                            addFaceFunction(faceListIdGuid);
+                        }
+                    });
+                }
+            });
+        } else {
+            addFaceFunction(lst.faceListId);
+        }
+    }, function(error){
+        console.log(error);
+        p_callback({
+            status: 400,
+            error: error
+        });
+    });
+};

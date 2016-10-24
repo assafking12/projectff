@@ -44,6 +44,11 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
                             var faces = [];
                             $scope.selectedFace = null;
                             var ctx = $("#canvas")[0].getContext("2d");
+
+                            if (data.length == 0) {
+
+                            }
+
                             data.forEach(function(currFace){
                                 // Set the position of the faces caused the resize of the image
                                 var canvasFaceLocation = {

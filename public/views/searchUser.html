@@ -32,8 +32,13 @@
                 </td>
             </tr>
         </table>
-        <div ng-if="foundUsers.error || foundUsers.length==0" style="color: red;">
-            * לא נמצאו משתמשים
+        <div style="color: red;">
+            <span ng-if="foundUsers.error || foundUsers.length==0">
+                * לא נמצאו משתמשים
+            </span>
+            <span ng-if="faces && faces.length==0">
+                * לא נמצאו פרצופים (אולי התמונה לא ברורה או מטושטשת באזור הפנים)
+            </span>
         </div>
     </div>
 </div>

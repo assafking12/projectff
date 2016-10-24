@@ -2,6 +2,7 @@
  * Created by Assaf on 23/10/2016.
  */
 var mongo = require('../DAL/mongoConnection');
+var photosBL = require('./photosBL');
 
 exports.loginUser = function(p_request, p_callback) {
     var db = mongo.db;
@@ -11,10 +12,10 @@ exports.loginUser = function(p_request, p_callback) {
     // Find the user
     collection.find({userId:userId}).toArray(function(err, users){
         // There was an error
-        if (err!=null){
+        if (err!=null) {
             console.log("Failed to find user with the id: " + userId + "\n" + err);
             p_callback({
-                status:400,
+                status: 400,
                 error: err
             });
             // The user is not exists in the DB
@@ -35,7 +36,28 @@ exports.loginUser = function(p_request, p_callback) {
             // Save the new user
             collection.insert(user, function(insertError, r){
                 if (insertError==null){
-                    p_callback(user);
+                    photosBL.addImageToFaceList(user.photo, user.userId, function(face) {
+                        if (!face.error){
+                            collection.updateOne({
+                                userId: user.userId
+                            }, {
+                                $set: {
+                                    face: face
+                                }
+                            }, function(updateError, r) {
+                                if (updateError) {
+                                    console.log("Failed to update the user in order to add him the face field: " + face + "\n" + updateError);
+                                    p_callback({
+                                        status:400,
+                                        error: updateError
+                                    });
+                                } else {
+                                    user.face = face;
+                                    p_callback(user);
+                                }
+                            });
+                        }
+                    });
                 } else {
                     console.log("\nFailed to save new user:\n" + JSON.stringify(user) + "\n" + insertError + "\n");
                     p_callback({
