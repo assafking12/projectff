@@ -130,7 +130,7 @@ exports.addImageToFaceList = function(p_imageUrl, p_userId, p_callback) {
     var db = mongo.db;
     var photosCollection = db.collection('FaceLists');
 
-    photosCollection.findOne({"numberOfUsers":{"$lt":50}}).then(function(lst) {
+    photosCollection.findOne({"numberOfUsers":{"$lt":100}}).then(function(lst) {
 
         var addFaceFunction = function(listId) {
             var url = "https://api.projectoxford.ai/face/v1.0/facelists/" + listId + "/persistedFaces";
@@ -201,7 +201,7 @@ exports.addImageToFaceList = function(p_imageUrl, p_userId, p_callback) {
                     });
                 } else {
                     var faceListToInsert = {
-                        faceListId: faceListIdGuid,
+                        faceListId: faceListIdGuid.value,
                         users: [],
                         numberOfUsers: 0
                     };

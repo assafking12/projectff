@@ -58,6 +58,9 @@ myapp.service('restService', function($http) {
             },
             delete: function(p_id, p_successFunc, p_errorFunc) {
                 sendHttpRequestDelete(url + "delete?p_id=" + p_id, p_successFunc, p_errorFunc);
+            },
+            updateMany: function(p_objects, p_successFunc, p_errorFunc) {
+                sendHttpRequestNotGetWithParams(url + "updateMany", "PUT", p_objects, p_successFunc, p_errorFunc);
             }
         }
     });

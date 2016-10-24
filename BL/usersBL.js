@@ -3,6 +3,7 @@
  */
 var mongo = require('../DAL/mongoConnection');
 var photosBL = require('./photosBL');
+var MongoClient = require('mongodb').MongoClient;
 
 exports.loginUser = function(p_request, p_callback) {
     var db = mongo.db;
@@ -90,4 +91,61 @@ exports.loginUser = function(p_request, p_callback) {
             });
         }
     });
-}
+};
+
+exports.getAll = function(p_callback) {
+    var db = mongo.db;
+    var usersCollection = db.collection('Users');
+
+    usersCollection.find({name: 'no name'}).toArray(function(err, users){
+        p_callback(users);
+    });
+};
+
+exports.updateMany = function(p_users) {
+    var db = mongo.db;
+    var usersCollection = db.collection('Users');
+
+    p_users.forEach(function(currUser) {
+        usersCollection.updateOne({
+            userId: currUser.userId
+        }, {
+            $set: {
+                name: currUser.name
+            }
+        }, function(err, r) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
+};
+
+exports.reload = function() {
+    MongoClient.connect("mongodb://localhost:27017/test", function(err, db){
+        if(!err) {
+            db.collection("Users").find({"face.faceId":""}).toArray(function(err, users) {
+                if (!err) {
+                    var i = 0;
+                    setInterval(function() {
+                        if (i == users.length - 1) {
+                            return;
+                        }
+
+                        var endI = i+20;
+                        while(endI > i && i < users.length - 1) {
+                            var currUser = users[i];
+                            exports.loginUser({body:{
+                                id: currUser.userId,
+                                name: currUser.name,
+                                token: {},
+                                photo: currUser.photo
+                            }}, function(data){});
+                            i++;
+                        }
+                    }, 2 * 60 * 1000);
+                }
+            });
+        }
+    })
+};

@@ -172,4 +172,33 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
             }
         }
     });
+
+    // function getUserName(userId, callback) {
+    //     facebookService.api('/' + userId + "?fields=name", function(res) {
+    //         if (res.name) {
+    //             callback(res.name);
+    //         } else {
+    //             callback("no name");
+    //         }
+    //     });
+    // }
+    //
+    // $scope.reloadUsersNames = function(){
+    //     restService.users.getAll(function(users) {
+    //         users.forEach(function(currUser, index) {
+    //             getUserName(currUser.userId, function(username) {
+    //                 users[index].name = username;
+    //                 if (index == users.length - 1) {
+    //                     restService.users.updateMany({users: users}, function() {
+    //
+    //                     }, function(){
+    //
+    //                     });
+    //                 }
+    //             });
+    //         });
+    //     }, function(error) {
+    //         console.log(error);
+    //     });
+    // }
 });
