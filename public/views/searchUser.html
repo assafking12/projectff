@@ -15,7 +15,7 @@
     </div>
     <br>
     <div>
-        <table style="direction: rtl; width: 350px;">
+        <table ng-if="!foundUsers.error" style="direction: rtl; width: 350px;">
             <tr ng-repeat="user in foundUsers track by $index">
                 <td>
                     <a href="{{user.photo}}" target="_blank">
@@ -32,5 +32,8 @@
                 </td>
             </tr>
         </table>
+        <div ng-if="foundUsers.error || foundUsers.length==0" style="color: red;">
+            * לא נמצאו משתמשים
+        </div>
     </div>
 </div>

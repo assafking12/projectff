@@ -3,7 +3,7 @@
  */
 myapp.controller('searchUserCtrl', function($scope, facebookService, restService, $location, $rootScope) {
     $scope.image = {};
-    $scope.foundUsers = [];
+    $scope.foundUsers = null;
 
     if ($rootScope.user == null) {
         facebookService.getLoginStatus(function (response) {
@@ -38,10 +38,11 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
 
             facebookService.getLoginStatus(function (response){
                 if ($rootScope.user != null && response.status === 'connected' && response.authResponse != null && $rootScope.user.userId == response.authResponse.userID){
+                    $scope.faces = null;
                     restService.photos.findFaceInImage(p_isUrl, p_src, function(data){
                         if (!data.error){
+                            var faces = [];
                             $scope.selectedFace = null;
-                            $scope.faces = [];
                             var ctx = $("#canvas")[0].getContext("2d");
                             data.forEach(function(currFace){
                                 // Set the position of the faces caused the resize of the image
@@ -54,7 +55,7 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
 
                                 // Save the location of the faces in array
                                 // The real location (the face's location from the server) and the canvas location (where to place the face on the canvas)
-                                $scope.faces.push({
+                                faces.push({
                                     faceId: currFace.faceId,
                                     real: currFace.faceRectangle,
                                     canvas: canvasFaceLocation
@@ -67,6 +68,7 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
                                 ctx.strokeStyle = 'black';
                                 ctx.stroke();
                             });
+                            $scope.faces = faces;
                         } else {
                             console.log(data);
                         }
@@ -111,7 +113,7 @@ myapp.controller('searchUserCtrl', function($scope, facebookService, restService
 
     $("#canvas").on('click', function(event){
         if ($scope.faces != null && $scope.faces.length != 0) {
-            $scope.foundUsers = [];
+            $scope.foundUsers = null;
             $scope.$apply();
 
             var selectedFace = [];

@@ -85,7 +85,43 @@ exports.getImage = function(p_imageGuid, p_callback) {
 
 exports.findUserByPhoto = function(p_faceId, p_callback) {
     var db = mongo.db;
-    db.collection("Users").find({name: "Assaf Zvigoren"}).toArray(function(err, data){
-        p_callback(data);
-    })
+    var usersCollection = db.collection("Users");
+    var faceListsCollection = db.collection("FaceLists");
+
+    faceListsCollection.find().toArray(function(err, data) {
+        var url = "https://api.projectoxford.ai/face/v1.0/findsimilars";
+        var json = {
+            faceId: p_faceId,
+            mode: "matchFace",
+            faceListId: ""
+        };
+
+        var foundFace = [];
+
+        data.forEach(function(currList) {
+            json.faceListId = currList.faceListId;
+            sendFaceAPI(url, json, function(apiErr, response, faces) {
+                if (apiErr == null && faces != null) {
+                    faces.forEach(function(currFace) {
+                        if (currFace.confidence >= 0.5) {
+                            foundFace.push(currFace.persistedFaceId);
+                        }
+                    });
+
+                    usersCollection.find({"face.persistedFaceId":{"$in":foundFace}},{"userId":"","name":"","photo":""}).toArray(function(err, foundUsers){
+                        if (err){
+                            console.log("Failed to find in the DB users that have the persistent face id that returned\n" + err)
+                        }
+                        p_callback(foundUsers);
+                    });
+                } else {
+                    console.log("Failed to find similar faces from the given face\n" + apiErr);
+                    p_callback({
+                        status:400,
+                        error: apiErr
+                    });
+                }
+            });
+        });
+    });
 }

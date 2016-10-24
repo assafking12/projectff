@@ -25,7 +25,7 @@ router.get('/cacheImages/:imageGuid', function(req, res) {
 });
 
 router.post('/findUserByPhoto', function(req, res) {
-    photosBL.findUserByPhoto(req.body.faceId, function(data) {
+    photosBL.findUserByPhoto(req.body.p_faceId, function(data) {
         res.json(data);
     });
 });
